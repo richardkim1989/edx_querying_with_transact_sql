@@ -1,0 +1,74 @@
+--C11 Retrieve All Customer Data
+SELECT
+*
+FROM
+SalesLT.Customer
+
+--C12 Retrieve Customer Name Data
+SELECT
+Title,
+FirstName,
+MiddleName,
+LastName,
+Suffix
+FROM
+SalesLT.Customer
+
+--C13 Retrieve Customer Names and Phone Numbers
+SELECT
+SalesPerson,
+Title + ' ' + LastName AS CustomerName,
+Phone
+FROM
+SalesLT.Customer
+
+
+--C21 Retrieve a List of Customer Companies
+SELECT
+CAST(CustomerID AS varchar)
++ ': '
++ CompanyName AS CustomerCompany
+FROM
+SalesLT.Customer
+
+--C22 Retrieve a List of Sales Order Revisions
+SELECT
+SalesOrderNumber
++ '('
++ STR(RevisionNumber,1)
++ ')' AS OrderRevision,
+CONVERT(nvarchar(30), OrderDate, 102) AS OrderDate
+FROM
+SalesLT.SalesOrderHeader
+
+
+--C31 Retrieve Customer Contact Names with Middle Names
+SELECT
+FirstName
++ ' '
++ ISNULL(MiddleName + ' ', '')
++ LastName AS CustomerName
+FROM
+SalesLT.Customer
+
+--32 Retrieve Primary Contact Details
+--*Remove some EmailAddress first
+	UPDATE SalesLT.Customer
+	SET EmailAddress = NULL
+	WHERE CustomerID % 7 = 1
+SELECT
+CustomerID,
+COALESCE(EmailAddress, Phone) AS PrimaryContact
+FROM
+SalesLT.Customer
+
+--33 Retrieve Shipping Status
+--*Remove some ShipDate
+	UPDATE SalesLT.SalesOrderHeader
+	SET ShipDate = NULL
+	WHERE SalesOrderID > 71899
+SELECT
+SalesOrderID,
+CASE WHEN ShipDate IS NOT NULL THEN 'Shipped' ELSE 'Awaiting Shipment' END AS ShippingStatus
+FROM
+SalesLT.SalesOrderHeader
