@@ -1,0 +1,115 @@
+--C11 Retrieve billing addresses
+SELECT
+c.CompanyName,
+a.AddressLine1,
+a.City,
+'Billing' AS AddressType
+FROM
+SalesLT.Customer c
+INNER JOIN
+SalesLT.CustomerAddress ca
+ON c.CustomerID = ca.CustomerID
+INNER JOIN
+SalesLT.Address a
+ON ca.AddressID = a.AddressID
+WHERE
+ca.AddressType = 'Main Office'
+
+--C12 Retrieve shipping addresses
+SELECT
+c.CompanyName,
+a.AddressLine1,
+a.City,
+'Shipping' AS AddressType
+FROM
+SalesLT.Customer c
+INNER JOIN
+SalesLT.CustomerAddress ca
+ON c.CustomerID = ca.CustomerID
+INNER JOIN
+SalesLT.Address a
+ON ca.AddressID = a.AddressID
+WHERE
+ca.AddressType = 'Shipping'
+
+--C13 Combine billing and shipping addresses
+SELECT
+c.CompanyName,
+a.AddressLine1,
+a.City,
+'Billing' AS AddressType
+FROM
+SalesLT.Customer c
+INNER JOIN
+SalesLT.CustomerAddress ca
+ON c.CustomerID = ca.CustomerID
+INNER JOIN
+SalesLT.Address a
+ON ca.AddressID = a.AddressID
+WHERE
+ca.AddressType = 'Main Office'
+UNION ALL
+SELECT
+c.CompanyName,
+a.AddressLine1,
+a.City,
+'Shipping' AS AddressType
+FROM
+SalesLT.Customer c
+INNER JOIN
+SalesLT.CustomerAddress ca
+ON c.CustomerID = ca.CustomerID
+INNER JOIN
+SalesLT.Address a
+ON ca.AddressID = a.AddressID
+WHERE
+ca.AddressType = 'Shipping'
+ORDER BY
+c.CompanyName,
+AddressType
+
+--C21 Retrieve customers with only a main office address
+SELECT
+c.CompanyName
+FROM
+SalesLT.Customer c
+INNER JOIN
+SalesLT.CustomerAddress ca
+ON c.CustomerID = ca.CustomerID
+WHERE
+ca.AddressType = 'Main Office'
+EXCEPT
+SELECT
+c.CompanyName
+FROM
+SalesLT.Customer c
+INNER JOIN
+SalesLT.CustomerAddress ca
+ON c.CustomerID = ca.CustomerID
+WHERE
+ca.AddressType = 'Shipping'
+ORDER BY
+c.CompanyName
+
+--C22 Retrieve only customers with both a main office address and a shipping address
+SELECT
+c.CompanyName
+FROM
+SalesLT.Customer c
+INNER JOIN
+SalesLT.CustomerAddress ca
+ON c.CustomerID = ca.CustomerID
+WHERE
+ca.AddressType = 'Main Office'
+INTERSECT
+SELECT
+c.CompanyName
+FROM
+SalesLT.Customer c
+INNER JOIN
+SalesLT.CustomerAddress ca
+ON c.CustomerID = ca.CustomerID
+WHERE
+ca.AddressType = 'Shipping'
+ORDER BY
+c.CompanyName
