@@ -1,0 +1,68 @@
+--C11 Retrieve customer orders
+SELECT
+c.CompanyName,
+oh.SalesOrderID,
+oh.TotalDue
+FROM
+SalesLT.Customer c
+JOIN
+SalesLT.SalesOrderHeader oh ON c.CustomerID = oh.CustomerID
+
+--C12 Retrieve customer orders with addresses
+SELECT
+c.CompanyName,
+oh.SalesOrderID,
+oh.TotalDue,
+a.AddressLine1,
+a.AddressLine2,
+a.City,
+a.StateProvince,
+a.PostalCode,
+a.CountryRegion,
+ca.AddressType
+FROM
+SalesLT.Customer c
+JOIN
+SalesLT.SalesOrderHeader oh
+ON c.CustomerID = oh.CustomerID
+JOIN
+SalesLT.CustomerAddress ca
+ON c.CustomerID = ca.CustomerID
+JOIN
+SalesLT.Address a
+ON ca.AddressID = a.AddressID
+WHERE
+ca.AddressType LIKE '%Main Office%'
+
+--C21 Retrieve a list of all customers and their orders
+SELECT
+c.CompanyName,
+c.FirstName,
+c.LastName,
+oh.SalesOrderID,
+oh.TotalDue
+FROM
+SalesLT.Customer c
+LEFT JOIN
+SalesLT.SalesOrderHeader oh
+ON c.CustomerID = oh.CustomerID
+ORDER BY
+oh.SalesOrderID DESC
+
+--C22 Retrieve a list of customers and products without orders
+SELECT
+c.CustomerID,
+p.ProductID
+FROM
+SalesLT.Customer c
+FULL JOIN
+SalesLT.SalesOrderHeader oh
+ON c.CustomerID = oh.CustomerID
+FULL JOIN
+SalesLT.SalesOrderDetail od
+ON oh.SalesOrderID = od.SalesOrderID
+FULL JOIN
+SalesLT.Product p
+ON od.ProductID = p.ProductID
+WHERE
+oh.SalesOrderID IS NULL
