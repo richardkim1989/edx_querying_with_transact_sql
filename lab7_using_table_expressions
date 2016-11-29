@@ -1,0 +1,69 @@
+--C11 Retrieve product model descriptions
+SELECT
+p.ProductID,
+p.Name AS ProductName,
+pmcdv.Name AS ProductModelName,
+pmcdv.Summary
+FROM
+SalesLT.Product p
+JOIN
+SalesLT.vProductModelCatalogDescription pmcdv
+ON p.ProductModelID = pmcdv.ProductModelID
+
+--C12 Create a table of distinct colors
+DECLARE
+@Color AS TABLE (Color varchar(30))
+INSERT INTO
+@Color
+SELECT DISTINCT
+Color
+FROM
+SalesLT.Product
+
+SELECT
+ProductID,
+Name AS ProductName,
+Color
+FROM
+SalesLT.Product
+WHERE
+Color IN (SELECT Color FROM @Color)
+
+--C13 Retrieve product parent categories
+SELECT
+*
+FROM
+dbo.ufnGetAllCategories()
+WHERE
+ParentProductCategoryName = 'Bikes'
+
+SELECT
+p.ProductID,
+p.Name AS ProductName,
+gac.ParentProductCategoryName,
+gac.ProductCategoryName
+FROM
+SalesLT.Product p
+JOIN
+dbo.ufnGetAllCategories() gac
+ON p.ProductCategoryID = gac.ProductCategoryID
+
+--C21 Retrieve sales revenue by customer and contact
+SELECT
+CompanyName,
+ContactName,
+SUM(TotalDue) AS Revenue
+FROM
+	(SELECT
+	c.CompanyName,
+	CONCAT(c.FirstName, ' ', c.LastName) AS ContactName,
+	oh.TotalDue
+	FROM
+	SalesLT.SalesOrderHeader oh
+	JOIN
+	SalesLT.Customer c
+	ON oh.CustomerID = c.CustomerID)
+	AS TotalDue
+GROUP BY
+CompanyName,
+ContactName
